@@ -80,14 +80,14 @@ def calculated_results(mean_returns, cov_matrix, risk_free_rate, pivot_data: pd.
     # Max SR
     maxSR_result = max_sharpe_ratio(mean_returns, cov_matrix, risk_free_rate, constarin_set)
     maxSR_std, maxSR_returns = portfolio_annualised_performance(maxSR_result['x'], mean_returns, cov_matrix) # пихаем веса из макс Шарпа
-    maxSR_allocation = pd.DataFrame(maxSR_result['x'], index=pivot_data.columns, columns=['allocation'])
-    maxSR_allocation['allocation'] = [round(i, 2) for i in maxSR_allocation['allocation']]
+    # maxSR_allocation = pd.DataFrame(maxSR_result['x'], index=pivot_data.columns, columns=['allocation'])
+    # maxSR_allocation['allocation'] = [round(i, 2) for i in maxSR_allocation['allocation']]
 
     # min Volatility
     minVol_result = min_variance(mean_returns, cov_matrix, constarin_set)
     minVol_std, minVol_returns = portfolio_annualised_performance(minVol_result['x'], mean_returns, cov_matrix) # пихаем веса из макс Шарпа
-    minVol_allocation = pd.DataFrame(minVol_result['x'], index=pivot_data.columns, columns=['allocation'])
-    minVol_allocation['allocation'] = [round(i, 2) for i in minVol_allocation['allocation']]
+    # minVol_allocation = pd.DataFrame(minVol_result['x'], index=pivot_data.columns, columns=['allocation'])
+    # minVol_allocation['allocation'] = [round(i, 2) for i in minVol_allocation['allocation']]
 
 
     #frontier
@@ -97,7 +97,9 @@ def calculated_results(mean_returns, cov_matrix, risk_free_rate, pivot_data: pd.
     for target in target_returns:
         efficient_list.append(efficient_return(mean_returns, cov_matrix, target, constarin_set)['fun'])
 
-    return maxSR_std, maxSR_returns, maxSR_allocation, minVol_std, minVol_returns, minVol_allocation, efficient_list, target_returns
+    return maxSR_std, maxSR_returns, minVol_std, minVol_returns, efficient_list, target_returns
+    # return maxSR_std, maxSR_returns, maxSR_allocation, minVol_std, minVol_returns, minVol_allocation, efficient_list, target_returns
+    
 
 
 # ----------------------------------------------------------
@@ -107,8 +109,7 @@ def random_portfolios(num_portfolios: int, mean_returns: pd.Series, cov_matrix: 
     results = np.zeros((3,num_portfolios))
     weights_record = []
     for i in range(num_portfolios):
-        weights = np.random.random(30)
-        weights /= np.sum(weights)
+        weights = np.random.dirichlet(np.ones(30))
         weights_record.append(weights)
         portfolio_std_dev, portfolio_return = portfolio_annualised_performance(weights, mean_returns, cov_matrix)
         results[0,i] = portfolio_std_dev
